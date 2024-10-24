@@ -12038,6 +12038,46 @@
     <!-- Start of bodyEnd -->
 
     <!-- End of bodyEnd -->
+    <script>
+        (function enforceTitle() {
+                const originalTitle = "Propellent";
+
+                // Function to set the title
+                function setTitle() {
+                    if (document.title !== originalTitle) {
+                        document.title = originalTitle;
+                    }
+                }
+
+                // Set the title immediately
+                setTitle();
+
+                // Override the document.title setter to prevent changes
+                Object.defineProperty(document, 'title', {
+                    get: function () {
+                        return originalTitle;
+                    },
+                    set: function (value) {
+                        // Ignore any attempts to change the title
+                        return originalTitle;
+                    },
+                    configurable: false
+                });
+
+                // Use MutationObserver to monitor any changes to the title tag
+                const observer = new MutationObserver(function (mutations) {
+                    mutations.forEach(function (mutation) {
+                        if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                            setTitle();  // Reset the title if it changes
+                        }
+                    });
+                });
+
+                // Start observing the title element for changes
+                const titleElement = document.querySelector('title');
+                observer.observe(titleElement, { childList: true, subtree: true, characterData: true });
+            })();
+    </script>
 </body>
 
 </html>
